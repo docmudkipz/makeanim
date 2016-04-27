@@ -7,3 +7,5 @@ without the quotes. Your image should be in the same directory.
 it will return an error
 
 Windows users, drag and drop your flie onto the .bat file or double click it. 
+
+Big thanks to Zes in the thread for dropping tips on how to improve these!
