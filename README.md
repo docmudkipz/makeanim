@@ -1,5 +1,3 @@
-"# makeanim"
-
 The script requires ffmpeg installed on your system and defined in your PATH or ffmpeg.exe in the directory of the image.
 
 If you for what ever reason dont know how to use the .sh on linux or mac the command is "sh makeanim.sh" in a terminal
