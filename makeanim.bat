@@ -67,7 +67,6 @@ CHOICE /M "Is this a static image? A for yes B for no: " /C:ab
 	
 	for /l %%x in (1, 1, %frame%) do copy /b %name%.rgb %name%.frame.%%x
 		copy /b %name%.frame.* %name%
-		pause >nul
 		del *.frame.*
 		del %name%.rgb
 	GOTO end
