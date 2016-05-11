@@ -8,10 +8,6 @@ IF [%1]==[] (
 	set input=%1
 )
 
-for %%i in (%input%) do (
-	echo "%%~xi"
-	set ext="%%~xi"
-	)
 cls
 
 IF exist "C:\Program Files\ImageMagick-6.9.3-Q16\convert.exe" (
