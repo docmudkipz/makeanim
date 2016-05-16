@@ -4,6 +4,13 @@ maxfps=30
 echo "What is the name of the file you want to convert(with extension)?"
 read input
 
+uncomp=$(stat -c%s "$input")
+cut='0.4'
+threshold=$(echo $uncomp*$cut | bc)
+threshold=${threshold%.*}
+rm img.bin
+rm output.bin
+clear
 echo "What do you want your framerate to be, any number between $minfps and $maxfps?"
 read fps
 	if [ $fps -lt $minfps ]; then
@@ -17,7 +24,7 @@ read fps
 	else
 clear
 fi
-
+clear
 echo "0 for top screen and 1 for bottom screen"
 read number
 	if [ $number = 0 ]; then
@@ -25,15 +32,18 @@ read number
 		magic=""400x240""
 		rename="anim"
 		rm "anim"
+		s=-t
 	else
 		size="320:240"
 		magic=""320x240""
 		rename="bottom_anim"
 		rm "bottom_anim"
+		s=-b
 fi
-
+clear
 echo "0 for static image, 1 for animation"
 read img
+clear
 	if [ $img = 0 ]; then
 		echo "How long in seconds do you want the image to last?"
 		read second
@@ -41,18 +51,55 @@ read img
 		convert $input -resize $magic -flatten -channel BGR -separate -channel RGB -combine -rotate 90 $rename.rgb
 		for i in $(seq 1 $frames); do cat $rename.rgb >> $rename; done
 		rm $rename.rgb
-		rm config
-		cp ./configs/$fps ./
-		mv $fps config
-		exit
+		clear
+		echo "Would you like this to be compressed? 0 for no, 1 for yes."
+		read compress
+		clear
+			if [ $compress = 1 ]; then
+					mv $rename output.bin
+					./ban9comp c $s < output.bin > img.bin
+					mv img.bin $rename
+					clear
+					comp=$(stat -c%s $rename)
+					if [ $comp -gt $threshold ]; then
+						clear
+						echo "The compressed version of the file is too large, it will be decompressed for you. Hit any button to continue"
+						read -p ""
+						mv $rename output.bin
+						./ban9comp d $s < output.bin > uncomp.bin
+						mv uncomp.bin $rename
+					fi
+			fi
+					rm output.bin
+					rm config
+					cp ./configs/$fps ./
+					mv $fps config
+					exit
 
-	else	
-
+	else
+clear
 		ffmpeg -y -i $input -vf fps=$fps,scale=$size:flags=lanczos,transpose=1 -pix_fmt bgr24 output.rgb
 		mv output.rgb $rename
-		rm config
-		cp ./configs/$fps ./
-		mv $fps config
-		exit
-
+		echo "Would you like this to be compressed? 0 for no, 1 for yes."
+		read compress
+		clear
+			if [ $compress = 1 ]; then
+					mv $rename output.bin
+					./ban9comp c $s < output.bin > img.bin
+					mv img.bin $rename
+					comp=$(stat -c%s $rename)
+						if [ $comp -gt $threshold ]; then
+							clear
+							echo "The compressed version of the file is too large, it will be decompressed for you. Hit any button to continue"
+							read -p ""
+							mv $rename output.bin
+							./ban9comp d $s < output.bin > uncomp.bin
+							mv uncomp.bin $rename
+						fi
+			fi
+					rm output.bin
+					rm config
+					cp ./configs/$fps ./
+					mv $fps config
+					exit
 fi
