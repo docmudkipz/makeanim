@@ -10,7 +10,10 @@ threshold=$(echo $uncomp*$cut | bc)
 threshold=${threshold%.*}
 rm img.bin
 rm output.bin
+compression="\x00"
+
 clear
+
 echo "What do you want your framerate to be, any number between $minfps and $maxfps?"
 read fps
 	if [ $fps -lt $minfps ]; then
@@ -22,8 +25,9 @@ read fps
 		read -p "Press enter to continue"
 		sh makeanim.sh
 	else
-clear
+	base=$(echo "obase=16; $fps" | bc)
 fi
+
 clear
 echo "0 for top screen and 1 for bottom screen"
 read number
@@ -40,40 +44,48 @@ read number
 		rm "bottom_anim"
 		s=-b
 fi
+
 clear
+
 echo "0 for static image, 1 for animation"
 read img
 clear
+
 	if [ $img = 0 ]; then
 		echo "How long in seconds do you want the image to last?"
 		read second
+
 		let frames=$[fps*second]
 		convert $input -resize $magic -flatten -channel BGR -separate -channel RGB -combine -rotate 90 $rename.rgb
 		for i in $(seq 1 $frames); do cat $rename.rgb >> $rename; done
 		rm $rename.rgb
 		clear
+
 		echo "Would you like this to be compressed? 0 for no, 1 for yes."
 		read compress
+
 		clear
 			if [ $compress = 1 ]; then
 					mv $rename output.bin
 					./ban9comp c $s < output.bin > img.bin
 					mv img.bin $rename
 					clear
+					compression="\x01"
 					comp=$(stat -c%s $rename)
 					if [ $comp -gt $threshold ]; then
 						clear
+						compression="\x00"
 						echo "The compressed version of the file is too large, it will be decompressed for you. Hit any button to continue"
 						read -p ""
 						mv $rename output.bin
 						./ban9comp d $s < output.bin > uncomp.bin
 						mv uncomp.bin $rename
+
 					fi
 			fi
+					compression3="\x$base$compression"
 					rm output.bin
-					rm config
-					cp ./configs/$fps ./
-					mv $fps config
+					echo -n -e $compression3 > config
 					exit
 
 	else
@@ -87,19 +99,21 @@ clear
 					mv $rename output.bin
 					./ban9comp c $s < output.bin > img.bin
 					mv img.bin $rename
+					compression="\x01"
 					comp=$(stat -c%s $rename)
 						if [ $comp -gt $threshold ]; then
 							clear
+							compression="\x00"
 							echo "The compressed version of the file is too large, it will be decompressed for you. Hit any button to continue"
 							read -p ""
 							mv $rename output.bin
 							./ban9comp d $s < output.bin > uncomp.bin
 							mv uncomp.bin $rename
-						fi
+
+					fi
 			fi
+					compression3="\x$base$compression"
 					rm output.bin
-					rm config
-					cp ./configs/$fps ./
-					mv $fps config
+					echo -n -e $compression3 > config
 					exit
 fi
