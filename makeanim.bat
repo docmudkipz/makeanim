@@ -32,7 +32,6 @@ IF [%1]==[] (
 
 		for /f "delims=" %%i in ('powershell -Command "'{0:x}' -f %fps%"') do set hex=%%i
 		set hex=0x%hex%
-		echo %hex%
 	cls
 		CHOICE /M "Press A for top screen or B for bottom screen" /C:ab
 			IF ERRORLEVEL 2 GOTO bot
