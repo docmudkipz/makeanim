@@ -1,20 +1,23 @@
 #!/bin/sh
 minfps=1
 maxfps=30
-echo "What is the name of the file you want to convert(with extension)?"
+version="0.1"
+
+echo "makeanim v.$version by Docmudkipz"
+echo "What is the name of the file you want to convert(ex. hi.gif)?"
 read input
 
+#Set threshold
 uncomp=$(stat -c%s "$input")
-cut='0.4'
+cut='0.5'
 threshold=$(echo $uncomp*$cut | bc)
 threshold=${threshold%.*}
-rm img.bin
-rm output.bin
 compression="\x00"
 
 clear
 
-echo "What do you want your framerate to be, any number between $minfps and $maxfps?"
+#Receive FPS value
+echo "Please input your framerate, between $minfps and $maxfps"
 read fps
 	if [ $fps -lt $minfps ]; then
 		echo "Please pick a number greater than 1"
@@ -25,10 +28,12 @@ read fps
 		read -p "Press enter to continue"
 		sh makeanim.sh
 	else
+	#Set fps in hex
 	base=$(echo "obase=16; $fps" | bc)
 fi
 
 clear
+#Set other variables
 echo "0 for top screen and 1 for bottom screen"
 read number
 	if [ $number = 0 ]; then
@@ -54,7 +59,7 @@ clear
 	if [ $img = 0 ]; then
 		echo "How long in seconds do you want the image to last?"
 		read second
-
+#Create static anim
 		let frames=$[fps*second]
 		convert $input -resize $magic -flatten -channel BGR -separate -channel RGB -combine -rotate 90 $rename.rgb
 		for i in $(seq 1 $frames); do cat $rename.rgb >> $rename; done
@@ -66,20 +71,19 @@ clear
 
 		clear
 			if [ $compress = 1 ]; then
-					mv $rename output.bin
-					./ban9comp c $s < output.bin > img.bin
-					mv img.bin $rename
+					./ban9comp c $s < $rename > compressed_$rename
+					rm $rename
+					mv compressed_$rename $rename
 					clear
+					#Set Compression and find comrpessed size
 					compression="\x01"
 					comp=$(stat -c%s $rename)
 					if [ $comp -gt $threshold ]; then
 						clear
-						compression="\x00"
-						echo "The compressed version of the file is too large, it will be decompressed for you. Hit any button to continue"
+						echo "This file is too large after compression, so it will be deleted. Try reducing the framerate."
 						read -p ""
-						mv $rename output.bin
-						./ban9comp d $s < output.bin > uncomp.bin
-						mv uncomp.bin $rename
+						rm $rename
+						exit
 
 					fi
 			fi
@@ -90,25 +94,26 @@ clear
 
 	else
 clear
+#Create Raw Dump
 		ffmpeg -y -i $input -vf fps=$fps,scale=$size:flags=lanczos,transpose=1 -pix_fmt bgr24 output.rgb
 		mv output.rgb $rename
 		echo "Would you like this to be compressed? 0 for no, 1 for yes."
 		read compress
 		clear
 			if [ $compress = 1 ]; then
-					mv $rename output.bin
-					./ban9comp c $s < output.bin > img.bin
-					mv img.bin $rename
+					./ban9comp c $s < $rename > compressed_$rename
+					rm $rename
+					mv compressed_$rename $rename
+					clear
+					#Set Compression and find comrpessed size
 					compression="\x01"
 					comp=$(stat -c%s $rename)
-						if [ $comp -gt $threshold ]; then
-							clear
-							compression="\x00"
-							echo "The compressed version of the file is too large, it will be decompressed for you. Hit any button to continue"
-							read -p ""
-							mv $rename output.bin
-							./ban9comp d $s < output.bin > uncomp.bin
-							mv uncomp.bin $rename
+					if [ $comp -gt $threshold ]; then
+						clear
+						echo "This file is too large after compression, so it will be deleted. Try reducing the framerate."
+						read -p ""
+						rm $rename
+						exit
 
 					fi
 			fi
