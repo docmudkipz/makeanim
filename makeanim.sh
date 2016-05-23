@@ -6,12 +6,6 @@ version="0.1"
 echo "makeanim v.$version by Docmudkipz"
 echo "What is the name of the file you want to convert(ex. hi.gif)?"
 read input
-
-#Set threshold
-uncomp=$(stat -c%s "$input")
-cut='0.5'
-threshold=$(echo $uncomp*$cut | bc)
-threshold=${threshold%.*}
 compression="\x00"
 
 clear
@@ -71,6 +65,11 @@ clear
 
 		clear
 			if [ $compress = 1 ]; then
+					#Set threshold
+					uncomp=$(stat -c%s "$rename")
+					cut='0.5'
+					threshold=$(echo $uncomp*$cut | bc)
+					threshold=${threshold%.*}
 					./ban9comp c $s < $rename > compressed_$rename
 					rm $rename
 					mv compressed_$rename $rename
@@ -101,6 +100,11 @@ clear
 		read compress
 		clear
 			if [ $compress = 1 ]; then
+					#Set threshold
+					uncomp=$(stat -c%s "$rename")
+					cut='0.5'
+					threshold=$(echo $uncomp*$cut | bc)
+					threshold=${threshold%.*}
 					./ban9comp c $s < $rename > compressed_$rename
 					rm $rename
 					mv compressed_$rename $rename
