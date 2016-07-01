@@ -215,3 +215,11 @@ pip-log.txt
 #Mr Developer
 .mr.developer.cfg
 ban9comp.exe
+*.mp4
+*.gif
+*.jpg
+*.bat
+*.exe
+test.py
+*.txt
+*.sh
