@@ -148,7 +148,7 @@ def comp():
 		else:
 			subprocess.call("%s c %s < %s  > compressedanim" % (ban9, s, rename), shell=True)
 		#Set vars for compressed size check
-		origsize = os.stat(source)
+		origsize = os.stat(rename)
 		origsize = origsize.st_size
 		threshold = origsize * 0.5
 		compsize = os.stat('compressedanim')
