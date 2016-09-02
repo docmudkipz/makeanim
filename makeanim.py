@@ -82,16 +82,16 @@ def vars():
 	global size, rename, s, ff
 	if screen == 'Top' or screen == 'top':
 		if ar == 'Yes' or ar == 'Y' or ar == 'yes' or ar == 'y' or ar == '':
-			ff = "ffmpeg -y -i %s -vf fps=%i,scale=\"\'if(gt(a,5/3),400,-2)\':\'if(gt(a,5/3),-2,240)\'\",pad=400:240:\'if(gt(a,5/3),0,trunc((400-240*a)/2))\':\'if(gt(a,5/3),trunc((240-400/a)/2),0)\':black,transpose=1 -pix_fmt bgr24 output.rgb" % (source, fps)
+			ff = "ffmpeg -y -i %s -vf fps=%i,scale=\"\'if(gt(a,5/3),400,-2)\':\'if(gt(a,5/3),-2,240)\'\",pad=400:240:\'if(gt(a,5/3),0,trunc((400-240*a)/2))\':\'if(gt(a,5/3),trunc((240-400/a)/2),0)\':black,transpose=1 -pix_fmt rgb565 output.rgb" % (source, fps)
 		else:
-			ff = "ffmpeg -y -i %s -vf fps=%i,scale=400:240:flags=lanczos,transpose=1 -pix_fmt bgr24 output.rgb" % (source, fps)
+			ff = "ffmpeg -y -i %s -vf fps=%i,scale=400:240:flags=lanczos,transpose=1 -pix_fmt rgb565 output.rgb" % (source, fps)
 		rename = 'anim'
 		s = '-t'
 	else:
 		if ar == 'Yes' or ar == 'Y' or ar == 'yes' or ar == 'y' or ar == '':
-			ff = "ffmpeg -y -i %s -vf fps=%i,scale=\"\'if(gt(a,4/3),320,-2)\':\'if(gt(a,4/3),-2,240)\'\",pad=320:240:\'if(gt(a,4/3),0,trunc((320-240*a)/2))\':\'if(gt(a,4/3),trunc((240-320/a)/2),0)\':black,transpose=1 -pix_fmt bgr24 output.rgb" % (source, fps)
+			ff = "ffmpeg -y -i %s -vf fps=%i,scale=\"\'if(gt(a,4/3),320,-2)\':\'if(gt(a,4/3),-2,240)\'\",pad=320:240:\'if(gt(a,4/3),0,trunc((320-240*a)/2))\':\'if(gt(a,4/3),trunc((240-320/a)/2),0)\':black,transpose=1 -pix_fmt rgb565 output.rgb" % (source, fps)
 		else:
-			ff = "ffmpeg -y -i %s -vf fps=%i,scale=320:240:flags=lanczos,transpose=1 -pix_fmt bgr24 output.rgb" % (source, fps)
+			ff = "ffmpeg -y -i %s -vf fps=%i,scale=320:240:flags=lanczos,transpose=1 -pix_fmt rgb565 output.rgb" % (source, fps)
 		rename = 'bottom_anim'
 		s = '-b'
 	return
